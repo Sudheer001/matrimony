@@ -86,7 +86,7 @@ export default function ProfileView() {
 
   return (
     <div className="container mt-4">
-      <Link to="/" className="btn btn-secondary mb-3">
+      <Link to={`${process.env.PUBLIC_URL}`} className="btn btn-secondary mb-3">
         ← Back to Profiles
       </Link>
       <button onClick={handleDownloadPDF} className="btn btn-success mb-3 ms-2">

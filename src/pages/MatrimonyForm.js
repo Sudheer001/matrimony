@@ -67,7 +67,7 @@ export default function MatrimonyForm() {
       const result = await response.json();
       console.log(result);
       alert(result.message || "Profile submitted!");
-      navigate('/');
+      navigate(process.env.PUBLIC_URL+'/');
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("Something went wrong!");

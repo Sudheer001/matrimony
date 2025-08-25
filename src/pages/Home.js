@@ -152,7 +152,7 @@ export default function ProfilesList() {
         <div className="row">
           {visibleProfiles.map((profile) => (
             <div className="col-md-4 mb-3" key={profile.id}>
-              <Link to={`/profile/${profile.id}`} className="text-decoration-none text-dark">
+              <Link to={`${process.env.PUBLIC_URL}/profile/${profile.id}`} className="text-decoration-none text-dark">
               <div className="card h-100 shadow-sm">
                 {profile.photos && profile.photos.length > 0 ? (
                   <img
