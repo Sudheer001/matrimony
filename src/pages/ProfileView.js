@@ -35,17 +35,36 @@ export default function ProfileView() {
 
   const handleDownloadPDF = async () => {
     const input = profileRef.current;
-    const canvas = await html2canvas(input, { scale: 2 });
-    const imgData = canvas.toDataURL("image/png");
-
+    const canvas = await html2canvas(input, {
+      scale: 2,
+      useCORS: true,   // allow cross-origin images
+      allowTaint: true
+    });
+  
+    const imgData = canvas.toDataURL("image/png", 1.0);
     const pdf = new jsPDF("p", "mm", "a4");
+  
     const imgProps = pdf.getImageProperties(imgData);
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+  
+    // If content exceeds one page, add extra pages
+    let heightLeft = pdfHeight;
+    let position = 0;
+  
+    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+    heightLeft -= pdf.internal.pageSize.getHeight();
+  
+    while (heightLeft > 0) {
+      position = heightLeft - pdfHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pdf.internal.pageSize.getHeight();
+    }
+  
     pdf.save(`${profile.name}_profile.pdf`);
   };
+  
 
   if (loading) {
     return (
@@ -86,8 +105,7 @@ export default function ProfileView() {
                   src={photo}
                   alt={`Profile ${index + 1}`}
                   className="img-fluid rounded mb-2 border"
-                  style={{ cursor: "pointer" }}
-                  
+                  style={{ cursor: "pointer" }}                
                 />
               ))
             ) : (
