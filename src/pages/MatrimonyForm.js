@@ -57,7 +57,7 @@ export default function MatrimonyForm() {
 
     try {
       const response = await fetch(
-        "http://192.168.0.117/matrimony/API/create_profile",
+        "https://softsolutionz.in/matrimony/server/API/create_profile",
         {
           method: "POST",
           body: data,

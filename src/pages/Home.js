@@ -17,7 +17,7 @@ export default function ProfilesList() {
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://192.168.0.117/matrimony/API/get_profiles")
+    fetch("https://softsolutionz.in/matrimony/server/API/get_profiles")
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
@@ -156,7 +156,7 @@ export default function ProfilesList() {
               <div className="card h-100 shadow-sm">
                 {profile.photos && profile.photos.length > 0 ? (
                   <img
-                    src={`http://192.168.0.117/matrimony/${profile.photos[0]}`}
+                    src={`https://softsolutionz.in/matrimony/server/${profile.photos[0]}`}
                     alt={profile.name}
                     className="card-img-top"
                     style={{ height: "200px", objectFit: "cover" }}
