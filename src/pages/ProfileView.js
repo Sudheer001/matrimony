@@ -19,7 +19,7 @@ export default function ProfileView() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`https://softsolutionz.in/matrimony/server/API/get_profiles/${id}`)
+    fetch(`${process.env.REACT_APP_API_URL}get_profiles/${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
@@ -81,7 +81,7 @@ export default function ProfileView() {
   }
 
   const photoUrls = profile.photos
-    ? profile.photos.map((p) => `https://softsolutionz.in/matrimony/server/${p}`)
+    ? profile.photos.map((p) => `${process.env.REACT_APP_Server_Domain}${p.photo_path}`)
     : [];
 
   return (

@@ -17,7 +17,7 @@ export default function ProfilesList() {
 
   useEffect(() => {
     setLoading(true);
-    fetch("https://softsolutionz.in/matrimony/server/API/get_profiles")
+    fetch(`${process.env.REACT_APP_API_URL}get_profiles`)
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
@@ -32,6 +32,32 @@ export default function ProfilesList() {
         setLoading(false);
       });
   }, []);
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this profile?")) {
+      fetch(`${process.env.REACT_APP_API_URL}delete_profile/${id}`, {
+        method: "DELETE",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          alert(data.message);
+          setProfiles(profiles.filter((p) => p.id !== id));
+        });
+    }
+  };
+
+  const handleDeactivate = (id) => {
+    fetch(`${process.env.REACT_APP_API_URL}deactivate_profile/${id}`, {
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        alert(data.message);
+        setProfiles(
+          profiles.map((p) => (p.id === id ? { ...p, status: "inactive" } : p))
+        );
+      });
+  };
 
   // Apply filters
   useEffect(() => {
@@ -156,7 +182,7 @@ export default function ProfilesList() {
               <div className="card h-100 shadow-sm">
                 {profile.photos && profile.photos.length > 0 ? (
                   <img
-                    src={`https://softsolutionz.in/matrimony/server/${profile.photos[0]}`}
+                    src={`${process.env.REACT_APP_Server_Domain}${profile.photos[0].photo_path}`}
                     alt={profile.name}
                     className="card-img-top"
                     style={{ height: "200px", objectFit: "cover" }}

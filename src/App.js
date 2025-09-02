@@ -9,6 +9,7 @@ import Footer from './pages/includes/Footer.js';
 import Home from './pages/Home.js';
 import MatrimonyForm from './pages/MatrimonyForm.js';
 import ProfileView from "./pages/ProfileView.js";
+import EditProfile from "./pages/EditProfile.js";
 // import About from './pages/About.js';
 // import Services from './pages/Services.js';
 // import Tariff from './pages/Tariff.js';
@@ -23,8 +24,9 @@ function App() {
        <Header/>
       <Routes>
          <Route path={process.env.PUBLIC_URL+'/'} element={<Home/>} />
-         <Route path={process.env.PUBLIC_URL+'/Matrimony'} element={<MatrimonyForm/>} />
+         <Route path={process.env.PUBLIC_URL+'/matrimony'} element={<MatrimonyForm/>} />
          <Route path={process.env.PUBLIC_URL+"/profile/:id"} element={<ProfileView />} />
+         <Route path={process.env.PUBLIC_URL+"/editProfile/:id"} element={<EditProfile />} />
          {/* 
          <Route path={process.env.PUBLIC_URL+'/Services'} element={<Services/>} />
          <Route path={process.env.PUBLIC_URL+'/Tariff'} element={<Tariff/>} />
