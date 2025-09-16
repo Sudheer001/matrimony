@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 
-export default function ProfilesList() {
+export default function PendingProfile() {
   const [profiles, setProfiles] = useState([]);
   const [filteredProfiles, setFilteredProfiles] = useState([]);
   const [visibleProfiles, setVisibleProfiles] = useState([]);
@@ -17,7 +17,7 @@ export default function ProfilesList() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${process.env.REACT_APP_API_URL}get_profiles`)
+    fetch(`${process.env.REACT_APP_API_URL}get_pending_profiles`)
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
@@ -100,11 +100,8 @@ export default function ProfilesList() {
       
 
       <div className="d-flex justify-content-between my-5">
-        <h2>Matrimony Profiles</h2>
-        <Link
-          to={`${process.env.PUBLIC_URL}/matrimony`}
-          className="btn btn-primary"
-        >Add Profile</Link>
+        <h2>Pending Matrimony Profiles</h2>
+  
       </div>
 
       {/* Filters */}

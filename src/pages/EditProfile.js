@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../providers/AuthContext";
 
 export default function EditProfile() {
   const { id } = useParams();
@@ -9,6 +10,26 @@ export default function EditProfile() {
   const [photos, setPhotos] = useState([]);
   const [photos_server, setPhotos_server] = useState([]);
   const [dragActive, setDragActive] = useState(false);
+  const { state } = useAuth();
+
+  const [managerData, setManagerData] = useState([]);
+
+  useEffect(() => {
+    // setLoading(true);
+    fetch(`${process.env.REACT_APP_API_URL}get_active_managers`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          setManagerData(data.result);
+          console.log(managerData);
+        }
+        // setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching data:", err);
+        // setLoading(false);
+      });
+  }, [id]);
 
   // Fetch profile details
   useEffect(() => {
@@ -78,10 +99,9 @@ export default function EditProfile() {
 
     const data = new FormData();
     for (const key in formData) {
-      if(formData[key] !== 'photos'){
+      if (formData[key] !== "photos") {
         data.append(key, formData[key]);
       }
-      
     }
 
     photos.forEach((file) => {
@@ -102,7 +122,7 @@ export default function EditProfile() {
       const result = await response.json();
       console.log(result);
       alert(result.message || "Profile submitted!");
-      navigate(process.env.PUBLIC_URL+'/');
+      navigate(process.env.PUBLIC_URL + "/");
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("Something went wrong!");
@@ -123,12 +143,39 @@ export default function EditProfile() {
 
   return (
     <div className="container mt-4">
-      <Link to="/" className="btn btn-secondary mb-3">
+      <Link
+        to={`${process.env.PUBLIC_URL}/profile/${id}`}
+        className="btn btn-secondary mb-3"
+      >
         ← Back to Profiles
       </Link>
       <div className="card shadow-lg p-4">
         <h2>Edit Profile</h2>
         <form onSubmit={handleSubmit}>
+          {state.user.role === "admin" && (
+            <>
+              <h4 className="mb-3">1) Manager Details</h4>
+              <div className="row g-3 b-3 mb-3">
+                <div className="col-md-6">
+                  <label className="form-label">Select Manager</label>
+                  <select
+                    className="form-select"
+                    name="manager"
+                    onChange={handleChange}
+                    value={formData.manager || ""}
+                  >
+                    <option value="">Select</option>
+                    {managerData.length > 0 &&
+                      managerData.map((manager, index) => (
+                        <option value={manager.id} key={index}>
+                          {manager.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </div>
+            </>
+          )}
           {/* Personal Details */}
           <h4 className="mb-3">I) Personal Details</h4>
           <div className="row g-3">
@@ -137,7 +184,7 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="name"
-                value={formData.name || ''}
+                value={formData.name || ""}
                 onChange={handleChange}
               />
             </div>
@@ -147,7 +194,7 @@ export default function EditProfile() {
                 type="date"
                 className="form-control"
                 name="dob"
-                value={formData.dob || ''}
+                value={formData.dob || ""}
                 onChange={handleChange}
               />
             </div>
@@ -157,7 +204,7 @@ export default function EditProfile() {
                 type="number"
                 className="form-control"
                 name="age"
-                value={formData.age || ''}
+                value={formData.age || ""}
                 onChange={handleChange}
               />
             </div>
@@ -166,7 +213,11 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="nakshatram"
-                value={formData.nakshatram_padam ? formData.nakshatram_padam :  formData.nakshatram || ''}
+                value={
+                  formData.nakshatram_padam
+                    ? formData.nakshatram_padam
+                    : formData.nakshatram || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -175,7 +226,7 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="rasi"
-                value={formData.rasi || ''}
+                value={formData.rasi || ""}
                 onChange={handleChange}
               />
             </div>
@@ -185,7 +236,9 @@ export default function EditProfile() {
                 type="time"
                 className="form-control"
                 name="tob"
-                value={formData.tob ? formData.tob :formData.time_of_birth || ''}
+                value={
+                  formData.tob ? formData.tob : formData.time_of_birth || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -194,7 +247,9 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="pob"
-                value={formData.pob ? formData.pob : formData.place_of_birth || ''}
+                value={
+                  formData.pob ? formData.pob : formData.place_of_birth || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -203,7 +258,7 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="height"
-                value={formData.height || ''}
+                value={formData.height || ""}
                 onChange={handleChange}
               />
             </div>
@@ -212,7 +267,7 @@ export default function EditProfile() {
               <select
                 className="form-select"
                 name="complexion"
-                value={formData.complexion || ''}
+                value={formData.complexion || ""}
                 onChange={handleChange}
               >
                 <option value="">Select</option>
@@ -226,7 +281,7 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="education"
-                value={formData.education || ''}
+                value={formData.education || ""}
                 onChange={handleChange}
               />
             </div>
@@ -235,7 +290,7 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="college"
-                value={formData.college || ''}
+                value={formData.college || ""}
                 onChange={handleChange}
               />
             </div>
@@ -244,7 +299,9 @@ export default function EditProfile() {
               <select
                 className="form-select"
                 name="jobType"
-                value={formData.jobType ? formData.jobType : formData.job_type || ''}
+                value={
+                  formData.jobType ? formData.jobType : formData.job_type || ""
+                }
                 onChange={handleChange}
               >
                 <option value="">Select</option>
@@ -259,7 +316,9 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="jobRole"
-                value={formData.jobRole ? formData.jobRole : formData.job_role || ''}
+                value={
+                  formData.jobRole ? formData.jobRole : formData.job_role || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -268,7 +327,7 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="company"
-                value={formData.company || ''}
+                value={formData.company || ""}
                 onChange={handleChange}
               />
             </div>
@@ -278,7 +337,7 @@ export default function EditProfile() {
                 type="number"
                 className="form-control"
                 name="salary"
-                value={formData.salary || ''}
+                value={formData.salary || ""}
                 onChange={handleChange}
               />
             </div>
@@ -287,7 +346,11 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="workPlace"
-                value={formData.workPlace ? formData.workPlace : formData.work_place || ''}
+                value={
+                  formData.workPlace
+                    ? formData.workPlace
+                    : formData.work_place || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -298,7 +361,11 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="partnerPreference"
-                value={formData.partnerPreference ? formData.partnerPreference : formData.partner_preference || ''}
+                value={
+                  formData.partnerPreference
+                    ? formData.partnerPreference
+                    : formData.partner_preference || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -312,7 +379,11 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="fatherName"
-                value={formData.fatherName ? formData.fatherName : formData.father_name || ''}
+                value={
+                  formData.fatherName
+                    ? formData.fatherName
+                    : formData.father_name || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -321,7 +392,11 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="fatherJob"
-                value={formData.fatherJob ? formData.fatherJob : formData.father_job || ''}
+                value={
+                  formData.fatherJob
+                    ? formData.fatherJob
+                    : formData.father_job || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -330,7 +405,11 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="motherName"
-                value={formData.motherName ? formData.motherName : formData.mother_name || ''}
+                value={
+                  formData.motherName
+                    ? formData.motherName
+                    : formData.mother_name || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -339,7 +418,11 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="motherJob"
-                value={formData.motherJob ? formData.motherJob : formData.mother_job || ''}
+                value={
+                  formData.motherJob
+                    ? formData.motherJob
+                    : formData.mother_job || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -348,7 +431,7 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="sibling1"
-                value={formData.sibling1 || ''}
+                value={formData.sibling1 || ""}
                 onChange={handleChange}
               />
             </div>
@@ -357,7 +440,7 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="sibling2"
-                value={formData.sibling2 || ''}
+                value={formData.sibling2 || ""}
                 onChange={handleChange}
               />
             </div>
@@ -366,7 +449,11 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="siblingJob1"
-                value={formData.siblingJob1 ? formData.siblingJob1 : formData.sibling1_job || ''}
+                value={
+                  formData.siblingJob1
+                    ? formData.siblingJob1
+                    : formData.sibling1_job || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -375,7 +462,11 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="siblingJob2"
-                value={formData.siblingJob2 ? formData.siblingJob2 : formData.sibling2_job || ''}
+                value={
+                  formData.siblingJob2
+                    ? formData.siblingJob2
+                    : formData.sibling2_job || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -384,7 +475,7 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="caste"
-                value={formData.caste || ''}
+                value={formData.caste || ""}
                 onChange={handleChange}
               />
             </div>
@@ -393,7 +484,11 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="subCaste"
-                value={formData.subCaste ? formData.subCaste : formData.sub_caste || ''}
+                value={
+                  formData.subCaste
+                    ? formData.subCaste
+                    : formData.sub_caste || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -402,7 +497,7 @@ export default function EditProfile() {
               <textarea
                 className="form-control"
                 name="address"
-                value={formData.address || ''}
+                value={formData.address || ""}
                 onChange={handleChange}
               ></textarea>
             </div>
@@ -411,7 +506,11 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="nativePlace"
-                value={formData.nativePlace ? formData.nativePlace : formData.native_place || ''}
+                value={
+                  formData.nativePlace
+                    ? formData.nativePlace
+                    : formData.native_place || ""
+                }
                 onChange={handleChange}
               />
             </div>
@@ -420,7 +519,7 @@ export default function EditProfile() {
               <input
                 className="form-control"
                 name="contact"
-                value={formData.contact || ''}
+                value={formData.contact || ""}
                 onChange={handleChange}
               />
             </div>
@@ -429,14 +528,18 @@ export default function EditProfile() {
           {/* Photo Upload */}
           <h4 className="mt-5 mb-3">III) Upload Photos</h4>
           <div className="row g-3 mb-3">
-          {photos_server.length > 0 && photos_server.map((photo, index) => (
-          
-            <div className="col-md-3 position-relative">
-            <img
+            {photos_server.length > 0 &&
+              photos_server.map((photo, index) => (
+                <div className="col-md-3 position-relative">
+                  <img
                     src={`${process.env.REACT_APP_Server_Domain}${photo.photo_path}`}
                     alt="Profile"
                     className="img-thumbnail"
-                    style={{ width: "100%", height: "100px", objectFit: "cover" }}
+                    style={{
+                      width: "100%",
+                      height: "100px",
+                      objectFit: "cover",
+                    }}
                   />
                   <button
                     type="button"
@@ -445,10 +548,9 @@ export default function EditProfile() {
                   >
                     ×
                   </button>
-            </div>
-          
-          ))}
-</div>
+                </div>
+              ))}
+          </div>
           <div
             className={`border border-2 p-4 text-center rounded ${
               dragActive ? "border-primary bg-light" : "border-secondary"
