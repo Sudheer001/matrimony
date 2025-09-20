@@ -10,10 +10,12 @@ import ViewManagers from "../pages/View_managers.js";
 import Login from "../pages/LoginPage.js";
 import { ProtectedRoute } from "./ProtectedRoute.js";
 import PendingProfile from "../pages/PendingProfile.js";
+import PdfShareComponent from "../pages/pdfShare.js";
 const RoutePath = () => {
   return (
     <Routes>
       <Route path={process.env.PUBLIC_URL + "/login"} element={<Login />} />
+      <Route path={process.env.PUBLIC_URL + "/share"} element={<PdfShareComponent />} />
       <Route path={process.env.PUBLIC_URL + "/matrimony"} element={<MatrimonyForm />} />
       <Route path={process.env.PUBLIC_URL + "/"} element={<ProtectedRoute roles={["admin", "manager"]}><Home /></ProtectedRoute>} />
       <Route path={process.env.PUBLIC_URL + "/pendingProfiles"} element={<ProtectedRoute roles={["admin"]}><PendingProfile /></ProtectedRoute>} />

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 export default function EditManager() {
   const { id } = useParams();
@@ -67,6 +67,12 @@ const handleChangePassword = (e) => {
   };
   return (
     <div className="container mt-5">
+      <Link
+        to={`${process.env.PUBLIC_URL}/viewManagers`}
+        className="btn btn-secondary mb-3"
+      >
+        ← Back to Managers
+      </Link>
       <div className="card shadow p-4">
         <h2 className="mb-4 text-center">Update Manager</h2>
         <form onSubmit={handleSubmit}>

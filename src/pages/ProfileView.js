@@ -4,6 +4,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useAuth } from "../providers/AuthContext";
 
+
 export default function ProfileView() {
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
@@ -37,6 +38,7 @@ export default function ProfileView() {
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
+          console.log(data.data);
           setDownloadData(data.data);
         }
         // setLoading(false);
@@ -45,7 +47,7 @@ export default function ProfileView() {
         console.error("Error fetching profile:", err);
         // setLoading(false);
       });
-  }, [id]);
+  }, [id, profile]);
 
   const handleProfileDeletion = () => {
     if (window.confirm("Delete this profile?")) {
@@ -75,17 +77,18 @@ export default function ProfileView() {
     }
   };
 
-  const makeProfileLive = (status) =>{
+  const makeProfileLive = (profile_live) =>{
     if (window.confirm("Do you want to change status?")) {
       fetch(`${process.env.REACT_APP_API_URL}make_profile_live/${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...{ status }, _method: "PUT" }),
+        body: JSON.stringify({ ...{ profile_live }, _method: "PUT" }),
       })
         .then((res) => res.json())
         .then((data) => {
           alert(data.message);
-          setProfile({ ...profile, status });
+          setProfile({ ...profile, profile_live });
+          setDownloadData();
         });
     }    
   };
@@ -107,6 +110,8 @@ export default function ProfileView() {
 
       const result = await response.json();
       console.log(result);
+      let profile_live = 'inactive';     
+      setProfile({ ...profile, profile_live });
       return result.status === "success";
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -122,6 +127,23 @@ export default function ProfileView() {
     }
 
     const input = profileRef.current;
+
+     // Wait for all images to load
+  const images = input.querySelectorAll("img");
+  const promises = [];
+
+  images.forEach((img) => {
+    if (!img.complete) {
+      promises.push(
+        new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve; // Still resolve on error
+        })
+      );
+    }
+  });
+
+  await Promise.all(promises);
     const canvas = await html2canvas(input, {
       scale: 2,
       useCORS: true, // allow cross-origin images
@@ -184,10 +206,9 @@ export default function ProfileView() {
           </Link>
           <button
             onClick={handleDownloadPDF}
-            className="btn btn-info mb-3 ms-2"
+            className="btn btn-info mb-3 ms-2"            
           >
-            <i className="fa fa-download" aria-hidden="true"></i> Download as
-            PDF
+            <i className="fa fa-download" aria-hidden="true"></i> {!loading ? 'Download as PDF' : 'Downloading...'}
           </button>
         </div>
         {state.user.role === "admin" ? (
@@ -230,7 +251,7 @@ export default function ProfileView() {
               <i className="fa fa-trash" aria-hidden="true"></i> Delete Profile
             </button>
           </div>
-        ) : downloadData ? (
+        ) : (downloadData && profile.profile_live=='inactive') ? (
           downloadData.manager_id == state.user.id ? (
             <button
               onClick={() => makeProfileLive("active")}
@@ -240,18 +261,18 @@ export default function ProfileView() {
               Profile Live
             </button>
           ) : (
-            <p>This profile was downloaded by {downloadData.user.name} on {downloadData.user.created_at}</p>
+            <p className="text-danger">This profile was downloaded by <b>{downloadData.manager.name}</b> on {downloadData.created_at}</p>
           )
         ) : (
-          <p>No downloads yet...</p>
+          <p className="text-success ">This profile is in live to download...</p>
         )}
       </div>
 
-      <div ref={profileRef} className="card shadow-lg p-4">
+      <div className="card shadow-lg p-4" ref={profileRef}>
         <h2 className="mb-4">{profile.name}</h2>
         <div className="row">
           {/* Photos */}
-          <div className="col-md-4">
+          <div className="col-md-3">
             {photoUrls.length > 0 ? (
               photoUrls.map((photo, index) => (
                 <img
@@ -270,7 +291,7 @@ export default function ProfileView() {
           </div>
 
           {/* Full Details */}
-          <div className="col-md-8">
+          <div className="col-md-9">
             <h4 className="mb-3">Personal Information</h4>
             <table className="table table-bordered">
               <tbody>

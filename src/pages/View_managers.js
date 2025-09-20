@@ -6,7 +6,7 @@ export default function ViewManagers() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}get_managers`)
+    fetch(`${process.env.REACT_APP_API_URL}get_only_managers`)
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "success") {
